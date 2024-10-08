@@ -1,0 +1,20 @@
+{
+  "name": "gym_managment_node_backend",
+  "version": "1.0.0",
+  "description": "gym dashboard backend ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon"
+  },
+  "author": "@yonna_hill",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.20.0"
+  }
+}
