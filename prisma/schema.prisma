@@ -9,7 +9,56 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  id            Int @id @default(autoincrement()) 
+  userId        String @unique @map("user_id")
+  name          String
+  email         String @unique
+  age           Int
+  weight        Float
+  phoneNum      String? @map("phone_num")
+  fitnessGoal   String? 
+  plan          String?
+  gender        String? @db.Char(1)
+  imgUrl        String? @map("img_url")
+  regDate       DateTime @default(now()) @map("reg_date")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  role Role     @default(USER) 
+  paymentMethod String? 
+  hasPaid       Boolean @default(true)
+}
+
+
+model Offer {
+  id  Int @id @default(autoincrement()) 
+  offerId String @unique @map("user_id")
+  title String 
+  paymentDuration String
+  base Float
+  discounted Float
+  services Json
+  offerImg String @map("offer_img")
+}
+
+model Setting{
+  id Int @id @default(autoincrement())
+  
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  type   String 
+  amount Float
+}
+
+enum Role{
+  ADMIN
+  SUPER_ADMIN
+  USER 
+}
+
 
