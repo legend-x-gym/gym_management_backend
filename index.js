@@ -6,6 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import user from "./routes/user.js";
+import offer from "./routes/offer.js";
+import setting from "./routes/setting.js";
 
 config();
 
@@ -23,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", user);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/offer", offer);
+app.use("/setting", setting);
 
 app.get("/", (req, res) => {
   res.send("legend x gym managment.");

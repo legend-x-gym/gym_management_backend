@@ -1,12 +1,10 @@
 import prisma from "../utils/prisma.js";
-import randomId from "../utils/randomId.js";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+
+import { deleteImage, randomId } from "../utils/utils.js";
 
 const getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({ orderBy: { regDate: "asc" } });
     res.status(200).json({ message: "Ok", users });
   } catch (err) {
     console.error(err.message);
@@ -51,7 +49,14 @@ const registerUster = async (req, res) => {
   if (!req.file) userId = randomId();
 
   try {
-    const user = await prisma.user.create({
+    const user = (await prisma.user.findUnique({ where: { email } })) || {};
+    if (Object.keys(user).length) {
+      deleteImage(id, "users");
+      return res
+        .status(400)
+        .json({ message: "Failed to register user. User already exists." });
+    }
+    const newUser = await prisma.user.create({
       data: {
         userId,
         name,
@@ -59,41 +64,61 @@ const registerUster = async (req, res) => {
         age: parseInt(age),
         weight: parseFloat(weight),
         gender,
-        fitnessGoal,
-        plan,
-        paymentMethod,
+        fitnessGoal: parseInt(fitnessGoal),
+        plan: parseInt(plan),
+        paymentMethod: parseInt(paymentMethod),
         phoneNum,
         imgUrl: `uploads/users/${userId}${ext}`,
       },
     });
-    res.status(200).json({ message: "User succesfully created", user });
+    res
+      .status(200)
+      .json({ message: "User succesfully created", user: newUser });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: "Failed to register user", error: err });
+    deleteImage(id, "users");
+    res.status(500).json({
+      message: "Failed to register user. Please try again.",
+      error: err,
+    });
   }
 };
 
 const updateUser = async (req, res) => {
   const { id: userId } = req.params;
-  const fields = Object.entries(req.body);
-  const updatedFields = fields.filter((field) => {
-    const [key, value] = field;
-    return value && !key.includes("ext");
-  });
-  const updates = Object.fromEntries(updatedFields);
-  if (!Object.keys(updates).length && !req.file)
-    return res.status(400).json({ message: "No fields specified for update." });
-  if (req.file) await deleteUserImage(userId, req.body.ext);
+  const {
+    regDate,
+    name,
+    email,
+    phone: phoneNum,
+    age,
+    weight,
+    gender,
+    fitnessGoal,
+    plan,
+    paymentMethod,
+    hasPaid,
+    ext,
+  } = req.body;
+
+  req.file && (await deleteImage(userId, "users", ext));
+
   try {
     const user = await prisma.user.update({
       where: { userId },
       data: {
-        ...updates,
-        regDate: new Date(updates.regDate),
-        weight: updates.weight ? parseFloat(updates.weight) : undefined,
-        age: updates.age ? parseInt(updates.age) : undefined,
-        hasPaid: updates.hasPaid === "true" ? true : false,
-        imgUrl: req.file ? `uploads/users/${userId}${req.body.ext}` : undefined,
+        regDate: regDate ? new Date(regDate) : undefined,
+        name: name,
+        email: email,
+        age: age ? parseInt(age) : undefined,
+        weight: weight ? parseFloat(weight) : undefined,
+        gender: gender,
+        fitnessGoal: fitnessGoal ? parseInt(fitnessGoal) : undefined,
+        plan: plan ? parseInt(plan) : undefined,
+        paymentMethod: paymentMethod ? parseInt(paymentMethod) : undefined,
+        phoneNum,
+        imgUrl: req.file ? `uploads/users/${userId}${ext}` : undefined,
+        hasPaid: hasPaid ? (hasPaid === "true" ? true : false) : undefined,
       },
     });
     res
@@ -111,7 +136,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
-    await deleteUserImage(id);
+    await deleteImage(id, "users");
     await prisma.user.delete({
       where: {
         userId: id,
@@ -121,28 +146,6 @@ const deleteUser = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(200).json({ message: "Failed to delete user", error: err });
-  }
-};
-
-const deleteUserImage = async (fileName, exception) => {
-  console.log();
-  try {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const uploadsDir = path.join(path.join(__dirname, ".."), "uploads/users");
-    fs.readdir(uploadsDir, (err, files) => {
-      if (err) throw new Error("Failed to read the directory");
-      const file = files.find(
-        (file) => file.includes(fileName) && !file.includes(exception)
-      );
-      if (!file) return;
-      const filePath = path.join(uploadsDir, file);
-      fs.unlink(filePath, (err) => {
-        if (err) throw new Error("failed to delete user image.");
-      });
-    });
-  } catch (err) {
-    throw err;
   }
 };
 

@@ -5,4 +5,4 @@ const authenticateRole = function (req, res, next) {
   if (!token) return res.json({ res: "Access token required" });
 };
 
-module.exports = authenticateToken;
+export { authenticateRole };

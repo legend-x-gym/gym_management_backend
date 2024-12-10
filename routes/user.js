@@ -1,6 +1,9 @@
 import express from "express";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import multer from "multer";
+import path from "path";
+
 import {
   deleteUser,
   getUser,
@@ -8,16 +11,12 @@ import {
   registerUster,
   updateUser,
 } from "../controllers/user.js";
-import multer from "multer";
-import path from "path";
-import randomId from "../utils/randomId.js";
+import { randomId } from "../utils/utils.js";
 
 const userRouter = express.Router();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/users");
-  },
+  destination: (req, file, cb) => cb(null, "uploads/users"),
   filename: (req, file, cb) => {
     const id = req.params.id || randomId();
     const ext = path.extname(file.originalname);
