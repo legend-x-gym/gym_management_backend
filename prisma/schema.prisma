@@ -20,9 +20,11 @@ model User{
   email         String @unique
   age           Int
   weight        Float
+  height        Float
   phoneNum      String? @map("phone_num")
   fitnessGoal   Int? 
   plan          Int?
+  shift         Int?
   gender        String? @db.Char(1)
   imgUrl        String? @map("img_url")
   regDate       DateTime @default(now()) @map("reg_date")
@@ -30,6 +32,7 @@ model User{
   role Role     @default(USER) 
   paymentMethod Int? 
   hasPaid       Boolean @default(true)
+  
 }
 
 
