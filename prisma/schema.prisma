@@ -58,5 +58,6 @@ model Admin{
   name      String
   email     String
   password  String
+  imgUrl  String? @map("img_url") 
   role      String @default("admin")
 }

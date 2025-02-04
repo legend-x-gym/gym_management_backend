@@ -1,5 +1,5 @@
 import prisma from "../utils/prisma.js";
-import { randomId } from "../utils/utils.js";
+import { deleteImage, randomId } from "../utils/utils.js";
 import bcrypt from "bcrypt";
 
 const createAdmin = async (req, res) => {
@@ -53,7 +53,9 @@ const signIn = async (req, res) => {
 };
 const updateAccount = async (req, res) => {
   const { id: adminId } = req.params;
-  const { email, password, name } = req.body;
+  const { email, password, name, ext } = req.body;
+
+  req.file && (await deleteImage(adminId, "admin", ext));
 
   try {
     const user = await prisma.admin.update({
@@ -62,6 +64,7 @@ const updateAccount = async (req, res) => {
         email,
         password,
         name,
+        imgUrl: req.file ? `uploads/admins/${adminId}${ext}` : undefined,
       },
     });
     res.status(200).json({ message: "Account updated", user });
