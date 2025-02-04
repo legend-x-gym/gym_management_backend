@@ -1,11 +1,11 @@
-import express from "express";
+import { Router } from "express";
 import {
   deleteSetting,
   getSettings,
   setSetting,
 } from "../controllers/setting.js";
 
-const settingRouter = express.Router();
+const settingRouter = Router();
 
 settingRouter.post("/create", setSetting);
 

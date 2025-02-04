@@ -1,6 +1,4 @@
-import express from "express";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import { Router } from "express";
 import multer from "multer";
 import path from "path";
 
@@ -11,12 +9,13 @@ import {
   registerUster,
   updateUser,
 } from "../controllers/user.js";
+
 import { randomId } from "../utils/utils.js";
 
-const userRouter = express.Router();
+const userRouter = Router();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/users"),
+  destination: (_, file, cb) => cb(null, "uploads/users"),
   filename: (req, file, cb) => {
     const id = req.params.id || randomId();
     const ext = path.extname(file.originalname);

@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
+model Trainee{
   id            Int @id @default(autoincrement()) 
   userId        String @unique @map("user_id")
   name          String
@@ -22,25 +22,23 @@ model User{
   weight        Float
   height        Float
   phoneNum      String? @map("phone_num")
-  fitnessGoal   Int? 
+  fitnessGoal   Int?    @map("fitness_goal")
   plan          Int?
   shift         Int?
   gender        String? @db.Char(1)
   imgUrl        String? @map("img_url")
   regDate       DateTime @default(now()) @map("reg_date")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  role Role     @default(USER) 
-  paymentMethod Int? 
+  updatedAt     DateTime @updatedAt @map("updated_at") 
+  paymentMethod Int? @map("payment_method")
   hasPaid       Boolean @default(true)
-  
 }
 
 
 model Offer {
   id  Int @id @default(autoincrement()) 
-  offerId String @unique @map("user_id")
+  offerId String @unique @map("offer_id")
   title String 
-  paymentDuration Int
+  paymentDuration Int @map("payment_duration")
   base Float
   discounted Float
   services Json
@@ -49,18 +47,16 @@ model Offer {
 
 model GymSetting{
   id Int @id @default(autoincrement())
-  settingId String @unique
+  settingId String @unique @map("setting_id")
   key String @unique
   value Int
 }
 
-
-
-
-enum Role{
-  ADMIN
-  SUPER_ADMIN
-  USER 
+model Admin{
+  id        Int @id @default(autoincrement())
+  adminId   String @map("admin_id")
+  name      String
+  email     String
+  password  String
+  role      String @default("admin")
 }
-
-

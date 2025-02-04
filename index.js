@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import user from "./routes/user.js";
 import offer from "./routes/offer.js";
 import setting from "./routes/setting.js";
+import auth from "./routes/auth.js";
 
 config();
 

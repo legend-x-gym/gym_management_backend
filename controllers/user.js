@@ -4,7 +4,9 @@ import { deleteImage, randomId } from "../utils/utils.js";
 
 const getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({ orderBy: { regDate: "asc" } });
+    const users = await prisma.trainee.findMany({
+      orderBy: { regDate: "asc" },
+    });
     res.status(200).json({ message: "Ok", users });
   } catch (err) {
     console.error(err.message);
@@ -17,7 +19,7 @@ const getUser = async (req, res) => {
   if (!id) res.status(400).json({ message: "Id is required to get user." });
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.trainee.findUnique({
       where: { userId },
     });
     res.status(200).json({ user });
@@ -31,6 +33,7 @@ const getUser = async (req, res) => {
 
 const registerUster = async (req, res) => {
   let userId = "";
+  console.log(req.body);
   const {
     id,
     name,
@@ -41,7 +44,7 @@ const registerUster = async (req, res) => {
     height,
     shift,
     gender,
-    fitnessGoal,
+    goal,
     plan,
     paymentMethod,
     ext,
@@ -51,14 +54,14 @@ const registerUster = async (req, res) => {
   if (!req.file) userId = randomId();
 
   try {
-    const user = (await prisma.user.findUnique({ where: { email } })) || {};
+    const user = (await prisma.trainee.findUnique({ where: { email } })) || {};
     if (Object.keys(user).length) {
       deleteImage(id, "users");
       return res
         .status(400)
         .json({ message: "Failed to register user. User already exists." });
     }
-    const newUser = await prisma.user.create({
+    const newUser = await prisma.trainee.create({
       data: {
         userId,
         name,
@@ -67,7 +70,7 @@ const registerUster = async (req, res) => {
         weight: parseFloat(weight),
         height: parseFloat(height),
         gender,
-        fitnessGoal: parseInt(fitnessGoal),
+        fitnessGoal: parseInt(goal),
         plan: parseInt(plan),
         shift: parseInt(shift),
         paymentMethod: parseInt(paymentMethod),
@@ -110,7 +113,7 @@ const updateUser = async (req, res) => {
   req.file && (await deleteImage(userId, "users", ext));
 
   try {
-    const user = await prisma.user.update({
+    const user = await prisma.trainee.update({
       where: { userId },
       data: {
         regDate: regDate ? new Date(regDate) : undefined,
@@ -145,7 +148,7 @@ const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
     await deleteImage(id, "users");
-    await prisma.user.delete({
+    await prisma.trainee.delete({
       where: {
         userId: id,
       },
