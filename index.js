@@ -28,6 +28,7 @@ app.use("/user", user);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/offer", offer);
 app.use("/setting", setting);
+app.use("/auth", auth);
 
 app.get("/", (req, res) => {
   res.send("legend x gym managment.");

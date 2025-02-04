@@ -1,19 +1,12 @@
 import { Router } from "express";
 
-import { createAdmin } from "../controllers/auth.js";
+import { createAdmin, signIn, updateAccount } from "../controllers/auth.js";
 
 const authRouter = Router();
 
 authRouter.post("/create", createAdmin);
-// authRouter.patch("/:id");
-// authRouter.delete("/:id");
+authRouter.post("/login", signIn);
+authRouter.post("/update", updateAccount);
 
-createAdmin({
-  body: {
-    email: "johnnymessay@gmail.com",
-    password: "1213121",
-    name: "Johnny",
-  },
-});
 
 export default authRouter;

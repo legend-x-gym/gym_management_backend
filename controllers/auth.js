@@ -1,51 +1,76 @@
-import { config } from "dotenv";
 import prisma from "../utils/prisma.js";
+import { randomId } from "../utils/utils.js";
+import bcrypt from "bcrypt";
 
-config();
-
-const key = process.env.CLERK_API_KEY;
-const createAdmin = async (req) => {
+const createAdmin = async (req, res) => {
   const { email, password, name } = req.body;
-  console.log(key);
+  const adminId = randomId();
+
   try {
-    const response = await fetch("https://api.clerk.dev/v1/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
+    const user = await prisma.admin.create({
+      data: {
+        email,
+        password: bcrypt.hashSync(password, 10),
+        name,
+        adminId,
       },
-      body: JSON.stringify({
-        email_address: email,
-        password,
-        // user_name: name,
-      }),
     });
 
-    const data = await response.json();
-    if (response.ok) {
-      const adminId = data.id;
-      const user = await prisma.admin.create({
-        data: {
-          email,
-          password,
-          name,
-          adminId,
-        },
-      });
-      //   res.status(200).json({ message: "admin succesfully created", user });
-      console.log("admin created succesfully");
-    } else {
-      //   res.status(response.status).json({ message: data.message });
-      console.log(response);
-      console.log("something went wrong");
-    }
+    res.status(200).json({ message: "admin succesfully created", user });
   } catch (err) {
-    console.error(err.message);
-    console.log("server error");
-    // res
-    //   .status(500)
-    //   .json({ message: "Internal server error", error: err.message });
+    res.status(500).json({
+      message: "Failed to create admin. Please try again.",
+      error: err,
+    });
   }
 };
 
-export { createAdmin };
+const signIn = async (req, res) => {
+  const { identifier, password } = req.body;
+
+  try {
+    const user = await prisma.admin.findFirst({
+      where: {
+        OR: [{ email: identifier }, { name: identifier }],
+      },
+    });
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: "Invalid user name or email. Please try again." });
+    const isMatch = bcrypt.compareSync(password, user.password);
+    if (!isMatch)
+      return res
+        .status(400)
+        .json({ message: "Incorrect password. Please try again." });
+    res.status(200).json({ message: "login successful", user });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to login. Please try again.",
+      error: err,
+    });
+  }
+};
+const updateAccount = async (req, res) => {
+  const { id: adminId } = req.params;
+  const { email, password, name } = req.body;
+
+  try {
+    const user = await prisma.admin.update({
+      where: { adminId },
+      data: {
+        email,
+        password,
+        name,
+      },
+    });
+    res.status(200).json({ message: "Account updated", user });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to update account. Please try again.",
+      error: err,
+    });
+  }
+};
+
+export { createAdmin, signIn, updateAccount };

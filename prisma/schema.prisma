@@ -54,7 +54,7 @@ model GymSetting{
 
 model Admin{
   id        Int @id @default(autoincrement())
-  adminId   String @map("admin_id")
+  adminId   String @map("admin_id") @unique
   name      String
   email     String
   password  String
