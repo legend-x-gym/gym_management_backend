@@ -1,4 +1,3 @@
-import { BiJoystick } from "react-icons/bi";
 import prisma from "../utils/prisma.js";
 import { deleteImage, randomId } from "../utils/utils.js";
 
