@@ -21,6 +21,6 @@ const upload = multer({ storage: storage });
 
 authRouter.post("/create", createAdmin);
 authRouter.post("/login", signIn);
-authRouter.post("/update", upload.single("image"), updateAccount);
+authRouter.patch("/:id", upload.single("image"), updateAccount);
 
 export default authRouter;

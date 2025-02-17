@@ -13,6 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Gym {
+  id          Int      @id @default(autoincrement())
+  gymId       String   @unique @map("gym_id")
+  name        String
+
+  // Relationships
+  trainees    Trainee[]
+  trainers    Trainer[]
+  offers      Offer[]
+  settings    GymSetting[]
+  admins      Admin[]
+  equipments  Equipment[]
+}
+
+model Offer {
+  id  Int @id @default(autoincrement()) 
+  offerId String @unique @map("offer_id")
+  title String 
+  paymentDuration Int @map("payment_duration")
+  base Float
+  discounted Float
+  services Json
+  offerImg String @map("offer_img")
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
+}
+
 model Trainee{
   id            Int @id @default(autoincrement()) 
   userId        String @unique @map("user_id")
@@ -31,18 +59,40 @@ model Trainee{
   updatedAt     DateTime @updatedAt @map("updated_at") 
   paymentMethod Int? @map("payment_method")
   hasPaid       Boolean @default(true)
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
 }
 
+model Trainer{
+  id            Int @id @default(autoincrement()) 
+  trainerId        String @unique @map("user_id")
+  name          String
+  email         String @unique
+  age           Int
+  weight        Float
+  height        Float
+  phoneNum      String? @map("phone_num")
+  imgUrl        String? @map("img_url")
+  regDate       DateTime @default(now()) @map("reg_date")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-model Offer {
-  id  Int @id @default(autoincrement()) 
-  offerId String @unique @map("offer_id")
-  title String 
-  paymentDuration Int @map("payment_duration")
-  base Float
-  discounted Float
-  services Json
-  offerImg String @map("offer_img")
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
+}
+
+model Equipment {
+  id          Int      @id @default(autoincrement())
+  equipmentId String   @unique @map("equipment_id")
+  name        String
+  description String?
+  status      String   @default("available")
+  lastMaintenanceDate DateTime? @map("last_maintenance_date")
+  nextMaintenanceDate DateTime? @map("next_maintenance_date")
+
+  // Relationship
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
 }
 
 model GymSetting{
@@ -50,6 +100,9 @@ model GymSetting{
   settingId String @unique @map("setting_id")
   key String @unique
   value Int
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
 }
 
 model Admin{
@@ -60,4 +113,7 @@ model Admin{
   password  String
   imgUrl  String? @map("img_url") 
   role      String @default("admin")
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
 }
