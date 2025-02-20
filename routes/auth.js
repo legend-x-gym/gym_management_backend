@@ -1,5 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
+import path from "path";
 
 import { createAdmin, signIn, updateAccount } from "../controllers/auth.js";
 import { randomId } from "../utils/utils.js";

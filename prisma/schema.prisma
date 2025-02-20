@@ -42,23 +42,24 @@ model Offer {
 }
 
 model Trainee{
-  id            Int @id @default(autoincrement()) 
-  userId        String @unique @map("user_id")
+  id            Int      @id @default(autoincrement()) 
+  userId        String   @unique @map("user_id")
   name          String
-  email         String @unique
+  email         String?   @unique
   age           Int
   weight        Float
   height        Float
-  phoneNum      String? @map("phone_num")
-  fitnessGoal   Int?    @map("fitness_goal")
+  phoneNum      String?  @map("phone_num")
+  fitnessGoal   Int?     @map("fitness_goal")
   plan          Int?
   shift         Int?
-  gender        String? @db.Char(1)
-  imgUrl        String? @map("img_url")
+  gender        String?  @db.Char(1)
+  imgUrl        String?  @map("img_url") @default("uploads/users/default-user.png")
   regDate       DateTime @default(now()) @map("reg_date")
   updatedAt     DateTime @updatedAt @map("updated_at") 
-  paymentMethod Int? @map("payment_method")
-  hasPaid       Boolean @default(true)
+  paymentMethod Int?     @map("payment_method")
+  hasPaid       Boolean  @default(true)
+  // remainingDays Int      @map("remaining_days")
 
   gymId         String
   gym           Gym      @relation(fields: [gymId], references: [gymId])
@@ -111,7 +112,7 @@ model Admin{
   name      String
   email     String
   password  String
-  imgUrl  String? @map("img_url") 
+  imgUrl    String? @map("img_url") @default("uploads/admins/default-admin.png")
   role      String @default("admin")
 
   gymId         String

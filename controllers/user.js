@@ -10,7 +10,9 @@ const getUsers = async (req, res) => {
     res.status(200).json({ message: "Ok", users });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: "error fetching users", error: err });
+    return res
+      .status(500)
+      .json({ message: "error fetching users", error: err });
   }
 };
 
@@ -25,7 +27,7 @@ const getUser = async (req, res) => {
     res.status(200).json({ user });
   } catch (err) {
     console.error(err.message);
-    res
+    return res
       .status(500)
       .json({ message: `Failed to fetch user-${userId}`, error: err.message });
   }
@@ -47,6 +49,7 @@ const registerUster = async (req, res) => {
     goal,
     plan,
     paymentMethod,
+    gymId,
     ext,
   } = req.body;
 
@@ -76,6 +79,7 @@ const registerUster = async (req, res) => {
         paymentMethod: parseInt(paymentMethod),
         phoneNum,
         imgUrl: `uploads/users/${userId}${ext}`,
+        gym: { connect: { gymId } },
       },
     });
     res
@@ -84,7 +88,7 @@ const registerUster = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     deleteImage(id, "users");
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to register user. Please try again.",
       error: err,
     });
@@ -132,12 +136,12 @@ const updateUser = async (req, res) => {
         hasPaid: hasPaid ? (hasPaid === "true" ? true : false) : undefined,
       },
     });
-    res
+    return res
       .status(200)
       .json({ message: "User changes updated succesfully.", user });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to update user. Please try again. ",
       error: err,
     });
@@ -155,8 +159,10 @@ const deleteUser = async (req, res) => {
     });
     res.status(200).json({ message: "User deleted succesfully" });
   } catch (err) {
-    console.error(err.message);
-    res.status(200).json({ message: "Failed to delete user", error: err });
+    // console.error(err.message);
+    return res
+      .status(200)
+      .json({ message: "Failed to delete user", error: err });
   }
 };
 

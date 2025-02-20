@@ -39,9 +39,11 @@ const createOffer = async (req, res) => {
     services,
     id: offerId,
     paymentDuration,
+    gymId,
     ext,
   } = req.body;
   try {
+    console.log(req.body);
     const offer = await prisma.offer.create({
       data: {
         offerId,
@@ -51,10 +53,12 @@ const createOffer = async (req, res) => {
         services: JSON.parse(services),
         paymentDuration: parseInt(paymentDuration),
         offerImg: `uploads/offers/${offerId}${ext}`,
+        gym: { connect: { gymId } },
       },
     });
     res.status(200).json({ offer });
   } catch (err) {
+    console.log(err.message);
     deleteImage(offerId, "offers");
     res.status(500).json({
       message: `Failed to upload offer plan.`,

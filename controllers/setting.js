@@ -12,7 +12,8 @@ const getSettings = async (req, res) => {
 };
 
 const setSetting = async (req, res) => {
-  const { key, value, id } = req.body;
+  const { key, value, id, gymId } = req.body;
+  console.log(req.body);
   if (!value)
     return res.status(400).json({ message: "Value is not specified." });
   const settingId = id || randomId();
@@ -28,6 +29,7 @@ const setSetting = async (req, res) => {
         settingId,
         key,
         value: parseInt(value),
+        gym: { connect: { gymId } },
       },
     });
     res

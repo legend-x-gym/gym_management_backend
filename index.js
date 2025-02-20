@@ -10,6 +10,8 @@ import offer from "./routes/offer.js";
 import setting from "./routes/setting.js";
 import auth from "./routes/auth.js";
 
+import gym from "./routes/gym.js";
+
 config();
 
 const PORT = process.env.PORT || 4000;
@@ -29,6 +31,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/offer", offer);
 app.use("/setting", setting);
 app.use("/auth", auth);
+app.use("/gym", gym);
 
 app.get("/", (req, res) => {
   res.send("legend x gym managment.");
