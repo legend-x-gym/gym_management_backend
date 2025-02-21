@@ -47,7 +47,7 @@ const registerUster = async (req, res) => {
     shift,
     gender,
     goal,
-    plan,
+    plan: strPlan, //plan as a string which should be parsed as int
     paymentMethod,
     gymId,
     ext,
@@ -64,6 +64,18 @@ const registerUster = async (req, res) => {
         .status(400)
         .json({ message: "Failed to register user. User already exists." });
     }
+    const plan = parseInt(strPlan);
+
+    // 1 || "" - month
+    // 2 - 3 month
+    // 3 - 6 month
+    // 4 - year
+
+    if (!plan || plan === 1) remainingDays = 30;
+    if (plan === 2) remainingDays = 90;
+    if (plan === 3) remainingDays = 180;
+    else remainingDays = 365;
+
     const newUser = await prisma.trainee.create({
       data: {
         userId,
@@ -78,6 +90,7 @@ const registerUster = async (req, res) => {
         shift: parseInt(shift),
         paymentMethod: parseInt(paymentMethod),
         phoneNum,
+        remainingDays,
         imgUrl: `uploads/users/${userId}${ext}`,
         gym: { connect: { gymId } },
       },
@@ -166,4 +179,26 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getUser, getUsers, deleteUser, registerUster, updateUser };
+const updateRemainingDays = async () => {
+  const users = await prisma.trainee.findMany();
+
+  await Promise.all(
+    users.map(async (user) => {
+      if (user.remainingDays > 0) {
+        await prisma.trainee.update({
+          where: { id: user.id },
+          data: { remainingDays: user.remainingDays - 1 },
+        });
+      }
+    })
+  );
+};
+
+export {
+  getUser,
+  getUsers,
+  deleteUser,
+  registerUster,
+  updateUser,
+  updateRemainingDays,
+};

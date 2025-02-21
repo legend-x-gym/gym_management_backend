@@ -59,7 +59,7 @@ model Trainee{
   updatedAt     DateTime @updatedAt @map("updated_at") 
   paymentMethod Int?     @map("payment_method")
   hasPaid       Boolean  @default(true)
-  // remainingDays Int      @map("remaining_days")
+  remainingDays Int      @map("remaining_days")
 
   gymId         String
   gym           Gym      @relation(fields: [gymId], references: [gymId])

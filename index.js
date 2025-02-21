@@ -2,6 +2,8 @@ import express from "express";
 import { config } from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import cron from "node-cron";
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -11,6 +13,8 @@ import setting from "./routes/setting.js";
 import auth from "./routes/auth.js";
 
 import gym from "./routes/gym.js";
+import prisma from "./utils/prisma.js";
+import { updateRemainingDays } from "./controllers/user.js";
 
 config();
 
@@ -32,6 +36,11 @@ app.use("/offer", offer);
 app.use("/setting", setting);
 app.use("/auth", auth);
 app.use("/gym", gym);
+
+// schedule users remaing day update task
+
+cron.schedule("0 0 * * *", updateRemainingDays);
+
 
 app.get("/", (req, res) => {
   res.send("legend x gym managment.");
