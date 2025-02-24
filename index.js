@@ -13,8 +13,9 @@ import setting from "./routes/setting.js";
 import auth from "./routes/auth.js";
 
 import gym from "./routes/gym.js";
-import prisma from "./utils/prisma.js";
 import { updateRemainingDays } from "./controllers/user.js";
+import notification from "./routes/notification.js";
+import { createNotifications } from "./controllers/notification.js";
 
 config();
 
@@ -36,11 +37,15 @@ app.use("/offer", offer);
 app.use("/setting", setting);
 app.use("/auth", auth);
 app.use("/gym", gym);
+app.use("/notification", notification);
 
 // schedule users remaing day update task
 
 cron.schedule("0 0 * * *", updateRemainingDays);
 
+// schedule everyday notification update
+
+cron.schedule("0 0 * * *", createNotifications);
 
 app.get("/", (req, res) => {
   res.send("legend x gym managment.");

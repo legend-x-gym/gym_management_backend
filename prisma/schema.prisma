@@ -25,6 +25,7 @@ model Gym {
   settings    GymSetting[]
   admins      Admin[]
   equipments  Equipment[]
+  notification Notification[]
 }
 
 model Offer {
@@ -114,6 +115,16 @@ model Admin{
   password  String
   imgUrl    String? @map("img_url") @default("uploads/admins/default-admin.png")
   role      String @default("admin")
+
+  gymId         String
+  gym           Gym      @relation(fields: [gymId], references: [gymId])
+}
+
+model Notification{
+  id  Int @id @default(autoincrement())
+  notificationId String @map("notification_id") @unique
+  notification   String 
+  seen           Boolean @default(false)
 
   gymId         String
   gym           Gym      @relation(fields: [gymId], references: [gymId])

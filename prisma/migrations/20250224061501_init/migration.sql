@@ -104,6 +104,17 @@ CREATE TABLE "Admin" (
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "notification_id" TEXT NOT NULL,
+    "notification" TEXT NOT NULL,
+    "seen" BOOLEAN NOT NULL,
+    "gymId" TEXT NOT NULL,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Gym_gym_id_key" ON "Gym"("gym_id");
 
@@ -134,6 +145,9 @@ CREATE UNIQUE INDEX "GymSetting_key_key" ON "GymSetting"("key");
 -- CreateIndex
 CREATE UNIQUE INDEX "Admin_admin_id_key" ON "Admin"("admin_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Notification_notification_id_key" ON "Notification"("notification_id");
+
 -- AddForeignKey
 ALTER TABLE "Offer" ADD CONSTRAINT "Offer_gymId_fkey" FOREIGN KEY ("gymId") REFERENCES "Gym"("gym_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -151,3 +165,6 @@ ALTER TABLE "GymSetting" ADD CONSTRAINT "GymSetting_gymId_fkey" FOREIGN KEY ("gy
 
 -- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_gymId_fkey" FOREIGN KEY ("gymId") REFERENCES "Gym"("gym_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_gymId_fkey" FOREIGN KEY ("gymId") REFERENCES "Gym"("gym_id") ON DELETE RESTRICT ON UPDATE CASCADE;
