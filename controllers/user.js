@@ -65,16 +65,11 @@ const registerUster = async (req, res) => {
         .json({ message: "Failed to register user. User already exists." });
     }
     const plan = parseInt(strPlan);
+    let remainingDays = 30;
 
-    // 1 || "" - month
-    // 2 - 3 month
-    // 3 - 6 month
-    // 4 - year
-
-    if (!plan || plan === 1) remainingDays = 30;
     if (plan === 2) remainingDays = 90;
     if (plan === 3) remainingDays = 180;
-    else remainingDays = 365;
+    if (plan === 4) remainingDays = 365;
 
     const newUser = await prisma.trainee.create({
       data: {
@@ -91,7 +86,7 @@ const registerUster = async (req, res) => {
         paymentMethod: parseInt(paymentMethod),
         phoneNum,
         remainingDays,
-        imgUrl: `uploads/users/${userId}${ext}`,
+        imgUrl: req.file ? `uploads/users/${userId}${ext}` : undefined,
         gym: { connect: { gymId } },
       },
     });
